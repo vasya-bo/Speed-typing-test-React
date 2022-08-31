@@ -4,11 +4,10 @@ import { textReducer, initialStateText } from './reducers/textReducer';
 
 function App() {
   const [text, dispatch] = useReducer(textReducer, initialStateText);
-
   const [data, setData] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [keyPressed, setKeyPressed] = useState(null);
-  const [color, setColor] = useState('green');
+  const [color, setColor] = useState('#03b403');
   const [startButton, setStartButton] = useState(true);
   const [seconds, setSeconds] = useState({ timer: null, seconds: 0 });
 
@@ -21,12 +20,11 @@ function App() {
   function stopTimer() {
     clearInterval(seconds.timer);
   }
-
   useEffect(() => {
     // fetch('https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text')
     //   .then((response) => response.text())
     //   .then((response) => { setData(response); });
-    setData('12345678890');
+    setData('Officia consectetur landjaeger lorem salami, short loin pariatur burgdoggen bacon laborum irure beef ribs do. Laborum buffalo prosciutto, deserunt ipsum sirloin pork chop aute tongue filet mignon consectetur occaecat ex short ribs frankfurter. Minim est laborum bresaola pork belly. Ullamco aliqua bacon brisket in flank do ut boudin t-bone laboris. Deserunt consequat sausage swine reprehenderit. Brisket aliquip shank officia shoulder.');
     console.log('upload1');
   }, [data]);
 
@@ -41,7 +39,7 @@ function App() {
   useEffect(() => {
     if (keyPressed && text.numberAll !== text.numberRight) {
       if (keyPressed === text.inProcess) {
-        setColor('green');
+        setColor('#03b403');
         const dataArray = text.notDone.split('');
         const firstLetter = dataArray[0];
         dataArray.shift();
@@ -51,7 +49,7 @@ function App() {
         setKeyPressed(null);
       } else {
         console.log('wrong letter');
-        setColor('red');
+        setColor('#ec5b2f');
         setKeyPressed(null);
 
         dispatch({ type: 'WRONG_LETTER' });
@@ -82,48 +80,62 @@ function App() {
     setShowResult(false);
     setColor('green');
     setStartButton(true);
+    stopTimer();
     setSeconds({ timer: null, seconds: 0 });
   }
 
   return (
     <div className="App">
 
-      {startButton && <button id="start" type="button" onClick={() => start()}>Start!</button>}
+      <div className="navbar navbar-expand-lg bg-primary header">
+        <span className="card-title">Check your typing skills!</span>
+      </div>
 
-      <span id="text-right">{text.Right}</span>
-      <span id="text-in-process" style={{ backgroundColor: color }}>{text.inProcess}</span>
-      <span id="text-not-proccessed">
-        {text.notDone}
-        {' '}
-      </span>
-      <br />
+      <div className="textArea-container">
+        <div className="textArea">
+          <span id="text-right">{text.Right}</span>
+          <span id="text-in-process" style={{ backgroundColor: color }}>{text.inProcess}</span>
+          <span id="text-not-proccessed">
+            {text.notDone}
+            {' '}
+          </span>
+        </div>
+      </div>
 
-      {showResult && <h2>End!</h2>}
+      {startButton && <button id="start" className="btn btn-primary" type="button" onClick={() => start()}>Start</button>}
+
+      {showResult && <h2>Great job!</h2>}
 
       {!startButton
      && (
-     <>
-       <div id="accuracy-Area">
-         Точность:
-         {
+       <>
+         <div className="statistic-container">
+           <div id="accuracy-Area">
+             Accuracy:
+             {' '}
+             {
         text.numberWrong + text.numberRight !== 0
           ? ((text.numberRight * 100) / (text.numberWrong + text.numberRight)).toFixed(1) : 100
         }
-         %
+             %
 
-       </div>
-       <div id="timer-Area">
-         Скорость:
-         {seconds.seconds !== 0
-           ? Math.floor((text.numberRight * 60) / (seconds.seconds)) : 0}
-         {' '}
-         знак/мин
+           </div>
+           <div id="timer-Area">
+             Typing speed:
+             {' '}
+             {seconds.seconds !== 0
+               ? Math.floor((text.numberRight * 60) / (seconds.seconds)) : 0}
+             {' '}
+             char/min
 
-       </div>
-     </>
+           </div>
+         </div>
+
+         {text.inProcess && <button className="btn btn-primary" type="button" onClick={() => reload()}>Start over</button> }
+       </>
      )}
       {showResult
-     && <button type="button" onClick={() => reload()}>Еще раз!</button>}
+     && <button className="btn btn-primary" type="button" onClick={() => reload()}>Again!</button>}
     </div>
   );
 }

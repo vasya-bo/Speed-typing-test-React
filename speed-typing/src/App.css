@@ -42,7 +42,41 @@
 }
 
 #text-right {
-  color: rgb(3, 180, 3);
+  color: #03b403;
+}
+
+.header {
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  height: 70px; 
+  color: rgb(255, 255, 255);
+  font-size: 1.5rem;
+}
+
+.textArea{
+  padding: 15px;
+  text-align: left;
+  height: 370px;
+  width: 600px;
+  background-color: #ffffffaf; 
+  border: solid 2px rgba(211, 211, 211, 0.712) ;
+  font-size: 1.3rem;
+}
+
+.textArea-container {
+  margin: 30px;
+
+  display: flex;
+  justify-content:center;
+  align-items: center;
 }
 
 
+button {
+  margin-top: 20px;
+}
+.text-in-process {
+padding: 3px;
+border-radius: 3px;
+}
