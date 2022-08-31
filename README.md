@@ -7,4 +7,4 @@ Speed typing testing executed with React
 
 1) cd speed-typing/
 2) npm install
-3)npm start
+3) npm start
