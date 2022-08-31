@@ -5,5 +5,6 @@ Speed typing testing executed with React
 
 Для запуска приложения откройте приложение папку приложения в IDE и выполните команды: 
 
-1) cd /speed-typing
-2)npm start
+1) cd speed-typing/
+2) npm install
+3)npm start
