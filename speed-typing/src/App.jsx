@@ -11,6 +11,8 @@ function App() {
   const [startButton, setStartButton] = useState(true);
   const [seconds, setSeconds] = useState({ timer: null, seconds: 0 });
 
+  // запуск таймера происходит при отрабатывании функции start,
+  // остановка при присвоении text.inProcess значения undefined
   function startTimer() {
     const timerID = setInterval(() => {
       setSeconds((prevValue) => ({ ...prevValue, seconds: prevValue.seconds + 1, timer: timerID }));
@@ -20,21 +22,26 @@ function App() {
   function stopTimer() {
     clearInterval(seconds.timer);
   }
+
+  // Срабатывает ровно один раз при загрузке data (не изменяется)
   useEffect(() => {
-    // fetch('https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text')
-    //   .then((response) => response.text())
-    //   .then((response) => { setData(response); });
-    setData('Officia consectetur landjaeger lorem salami, short loin pariatur burgdoggen bacon laborum irure beef ribs do. Laborum buffalo prosciutto, deserunt ipsum sirloin pork chop aute tongue filet mignon consectetur occaecat ex short ribs frankfurter. Minim est laborum bresaola pork belly. Ullamco aliqua bacon brisket in flank do ut boudin t-bone laboris. Deserunt consequat sausage swine reprehenderit. Brisket aliquip shank officia shoulder.');
-    console.log('upload1');
+    fetch('https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text')
+      .then((response) => response.text())
+      .then((response) => { setData(response); });
   }, [data]);
 
+  // Отрабатывает ровно один раз (пришлось отдельно, иначе при перезагрузке добавлялись слушатели)
   useEffect(() => {
-    console.log('addEvent upload');
     window.addEventListener('keypress', (event) => {
       event.preventDefault();
       setKeyPressed(event.key);
     }, true);
   }, []);
+
+  // // Если символ нажат и буква правильная, то текст из inProcess перемещается в Right,
+  // первый символ из notDone перемещается в InProcess и обрезается в notDone. Функция
+  // отрабатывает до того момента, пока в inProcess не попадает undefined
+  // + считается число правильных и неправильных ответов, state нажатой клавиши обнуляется
 
   useEffect(() => {
     if (keyPressed && text.numberAll !== text.numberRight) {
@@ -48,7 +55,6 @@ function App() {
 
         setKeyPressed(null);
       } else {
-        console.log('wrong letter');
         setColor('#ec5b2f');
         setKeyPressed(null);
 
@@ -56,16 +62,16 @@ function App() {
       }
     }
 
-    console.log(text.numberAll, text.numberRight);
     if (text.numberAll !== 0 && text.numberAll === text.numberRight) {
-      console.log('you are done! ');
-
       setShowResult(true);
       stopTimer();
     }
   }, [keyPressed, text]);
 
+  // Первая буква из data в inProcess,
+  // Весь остальной текст в notDone
   function start() {
+    setKeyPressed(null);
     const dataArray = data.split('');
     const firstLetter = dataArray[0];
     dataArray.shift();
@@ -74,11 +80,12 @@ function App() {
     setStartButton(false);
   }
 
+  // Все стейты приводятся к initital state
   function reload() {
     dispatch({ type: 'NEW_GAME' });
     setData(null);
     setShowResult(false);
-    setColor('green');
+    setColor('#03b403');
     setStartButton(true);
     stopTimer();
     setSeconds({ timer: null, seconds: 0 });
