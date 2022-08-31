@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import './App.css';
+import { textReducer, initialStateText } from './reducers/textReducer';
 
 function App() {
+  const [text, dispatch] = useReducer(textReducer, initialStateText);
+
   const [data, setData] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [keyPressed, setKeyPressed] = useState(null);
   const [color, setColor] = useState('green');
   const [startButton, setStartButton] = useState(true);
-
-  const [text, setText] = useState({
-    Right: '', inProcess: '', notDone: '', numberAll: 0, numberRight: 0, numberWrong: 0,
-  });
-
   const [seconds, setSeconds] = useState({ timer: null, seconds: 0 });
 
   function startTimer() {
@@ -19,17 +17,18 @@ function App() {
       setSeconds((prevValue) => ({ ...prevValue, seconds: prevValue.seconds + 1, timer: timerID }));
     }, 1000);
   }
+
   function stopTimer() {
     clearInterval(seconds.timer);
   }
 
   useEffect(() => {
-    fetch('https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text')
-      .then((response) => response.text())
-      .then((response) => { setData(response); });
-    // setData('12345678890');
+    // fetch('https://baconipsum.com/api/?type=meat-and-filler&paras=1&format=text')
+    //   .then((response) => response.text())
+    //   .then((response) => { setData(response); });
+    setData('12345678890');
     console.log('upload1');
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     console.log('addEvent upload');
@@ -40,28 +39,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('key in state', keyPressed);
-    console.log('text in procces', text.inProcess);
     if (keyPressed && text.numberAll !== text.numberRight) {
       if (keyPressed === text.inProcess) {
         setColor('green');
-
         const dataArray = text.notDone.split('');
         const firstLetter = dataArray[0];
         dataArray.shift();
-        setText((prevValue) => ({
-          ...prevValue,
-          Right: prevValue.Right + prevValue.inProcess,
-          inProcess: firstLetter,
-          notDone: dataArray.join(''),
-          numberRight: prevValue.numberRight + 1,
-        }));
+
+        dispatch({ type: 'RIGHT_LETTER', payload: { firstLetter, dataArray } });
+
         setKeyPressed(null);
       } else {
         console.log('wrong letter');
         setColor('red');
         setKeyPressed(null);
-        setText((prevValue) => ({ ...prevValue, numberWrong: prevValue.numberWrong + 1 }));
+
+        dispatch({ type: 'WRONG_LETTER' });
       }
     }
 
@@ -78,12 +71,18 @@ function App() {
     const dataArray = data.split('');
     const firstLetter = dataArray[0];
     dataArray.shift();
-
-    setText((prevValue) => ({
-      ...prevValue, numberAll: dataArray.length + 1, inProcess: firstLetter, notDone: dataArray.join(''),
-    }));
+    dispatch({ type: 'START', payload: { firstLetter, dataArray } });
     startTimer();
     setStartButton(false);
+  }
+
+  function reload() {
+    dispatch({ type: 'NEW_GAME' });
+    setData(null);
+    setShowResult(false);
+    setColor('green');
+    setStartButton(true);
+    setSeconds({ timer: null, seconds: 0 });
   }
 
   return (
@@ -101,23 +100,30 @@ function App() {
 
       {showResult && <h2>End!</h2>}
 
-      <div id="accuracy-Area">
-        Точность:
-        {
+      {!startButton
+     && (
+     <>
+       <div id="accuracy-Area">
+         Точность:
+         {
         text.numberWrong + text.numberRight !== 0
           ? ((text.numberRight * 100) / (text.numberWrong + text.numberRight)).toFixed(1) : 100
         }
-        %
+         %
 
-      </div>
-      <div id="timer-Area">
-        Скорость:
-        {seconds.seconds !== 0
-          ? Math.floor((text.numberRight * 60) / (seconds.seconds)) : 0}
-        {' '}
-        знак/мин
+       </div>
+       <div id="timer-Area">
+         Скорость:
+         {seconds.seconds !== 0
+           ? Math.floor((text.numberRight * 60) / (seconds.seconds)) : 0}
+         {' '}
+         знак/мин
 
-      </div>
+       </div>
+     </>
+     )}
+      {showResult
+     && <button type="button" onClick={() => reload()}>Еще раз!</button>}
     </div>
   );
 }
