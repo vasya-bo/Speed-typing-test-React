@@ -47,7 +47,7 @@ function App() {
     if (keyPressed && text.numberAll !== text.numberRight) {
       if (keyPressed === text.inProcess) {
         setColor('#03b403');
-        const dataArray = text.notDone.split('');
+        const dataArray = text.notDone;
         const firstLetter = dataArray[0];
         dataArray.shift();
 
@@ -103,13 +103,13 @@ function App() {
           <span id="text-right">{text.Right}</span>
           <span id="text-in-process" style={{ backgroundColor: color }}>{text.inProcess}</span>
           <span id="text-not-proccessed">
-            {text.notDone}
+            {text.notDone.join('')}
             {' '}
           </span>
         </div>
       </div>
 
-      {startButton && <button id="start" className="btn btn-primary" type="button" onClick={() => start()}>Start</button>}
+      {data && startButton && <button id="start" className="btn btn-primary" type="button" onClick={() => start()}>Start</button>}
 
       {showResult && <h2>Great job!</h2>}
 

@@ -1,5 +1,5 @@
 export const initialStateText = {
-  Right: '', inProcess: '', notDone: '', numberAll: 0, numberRight: 0, numberWrong: 0,
+  Right: '', inProcess: '', notDone: [], numberAll: 0, numberRight: 0, numberWrong: 0,
 };
 
 export function textReducer(state, action) {
@@ -9,14 +9,14 @@ export function textReducer(state, action) {
         ...state,
         numberAll: action.payload.dataArray.length + 1,
         inProcess: action.payload.firstLetter,
-        notDone: action.payload.dataArray.join(''),
+        notDone: action.payload.dataArray,
       };
     case 'RIGHT_LETTER':
       return {
         ...state,
         Right: state.Right + state.inProcess,
         inProcess: action.payload.firstLetter,
-        notDone: action.payload.dataArray.join(''),
+        notDone: action.payload.dataArray,
         numberRight: state.numberRight + 1,
       };
     case 'WRONG_LETTER':
